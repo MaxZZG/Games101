@@ -45,7 +45,7 @@ static bool insideTriangle(int x, int y, const Vector3f* _v)
     // TODO : Implement this function to check if the point (x, y) is inside the triangle represented by _v[0], _v[1], _v[2]
 
     // 通过向量叉乘检查是否在三角形内部
-    const Vector3f point {x,y,0.f};
+    const Vector3f point {(float)x,(float)y,0.f};
 
     // 第一个点
     if ((_v[1] - _v[0]).cross(point - _v[0])[2] *
@@ -126,43 +126,43 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t) {
     // TODO : Find out the bounding box of current triangle.
     // iterate through the pixel and find if the current pixel is inside the triangle
     // 找到包围盒
-    double maxX = 0,minX = 0,maxY = 0,minY = 0;
-    for(int i = 0;i < 3;i++)
-    {
-        if(v[i].x() > maxX)
-        {
-            maxX = v[i].x();
-        }
-        else
-        {
-            minX = v[i].x();
-        }
-        if (v[i].y() > maxY)
-        {
-            maxY = v[i].y();
-        }
-        else
-        {
-            minY = v[i].y();
-        }
-    }
+
+    float minX = std::min(v[0].x(), std::min(v[1].x(), v[2].x()));
+    float maxX = std::max(v[0].x(), std::max(v[1].x(), v[2].x()));
+    float minY = std::min(v[0].y(), std::min(v[1].y(), v[2].y()));
+    float maxY = std::max(v[0].y(), std::max(v[1].y(), v[2].y()));
+
     // 循环包围盒，查看是否处于三角形中
-    for(int x = minX;x < maxX;x++)
+    for(int x = minX; x < maxX;x++)
     {
-        for(int y = minY;y < minY;y++)
+        for(int y = minY; y < maxY;y++)
         {
+            float min_depth = FLT_MAX;
+
             bool inBox = insideTriangle(x,y,t.v);
-            if(inBox) {
+            if(inBox)
+            {
                 auto[alpha, beta, gamma] = computeBarycentric2D(x, y, t.v);
+                float w_reciprocal = 1.0/(alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+                float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+                z_interpolated *= w_reciprocal;
 
+                min_depth = std::min(min_depth, z_interpolated);
 
-
+                if (depth_buf[get_index(x, y)] > min_depth)
+                {
+                    //获得最上层应该渲染的颜色
+                    Vector3f color = t.getColor();
+                    Vector3f point;
+                    point << x, y, min_depth;
+                    //更新深度
+                    depth_buf[get_index(x, y)] = min_depth;
+                    //更新所在点的颜色
+                    set_pixel(point, color);
+                }
             }
         }
     }
-
-
-
 
     // If so, use the following code to get the interpolated z value.
     //auto[alpha, beta, gamma] = computeBarycentric2D(x, y, t.v);

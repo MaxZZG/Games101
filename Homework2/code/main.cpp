@@ -41,8 +41,8 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float z
 {
     // TODO: Copy-paste your implementation from the previous assignment.
     Eigen::Matrix4f projection;
-// 正交变换
 
+    // 正交变换
     Eigen::Matrix4f orth = Eigen::Matrix4f::Identity();
 
     float eye_arc = MY_PI * eye_fov / 180.0 / 2.0;
