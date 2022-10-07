@@ -34,6 +34,9 @@
 # build
 **/build/
 **/cmake-build-debug-wsl/
+**/cmake-build-debug/
 **.idea/
 
+# Mac os
+**.DS_Store
 
