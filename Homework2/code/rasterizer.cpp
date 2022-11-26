@@ -171,6 +171,9 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t) {
     //z_interpolated *= w_reciprocal;
 
     // TODO : set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
+
+
+
 }
 
 void rst::rasterizer::set_model(const Eigen::Matrix4f& m)
