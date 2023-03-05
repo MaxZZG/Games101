@@ -29,10 +29,10 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
 
     float arc = MY_PI * rotation_angle / 180.0;
 
-    model << cos(arc),-sin(arc),0,0,
-             sin(arc),cos(arc),0,0,
-             0,0,1,0,
-             0,0,0,1;
+    model << cos(arc), -sin(arc), 0, 0,
+        sin(arc), cos(arc), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1;
 
     return model;
 }
@@ -53,40 +53,41 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     Eigen::Matrix4f orth = Eigen::Matrix4f::Identity();
 
     float eye_arc = MY_PI * eye_fov / 180.0 / 2.0;
-    float top =  -tan(eye_arc) * zNear;
-    float bottom = -1.0* top;
+    float top = -tan(eye_arc) * zNear;
+    float bottom = -1.0 * top;
     float right = aspect_ratio * top;
-    float left = -1.0* right;
-    orth << 2/(right - left),0,0,-(right + left) / 2,
-            0,2/(top-bottom),0,-(top+bottom)/2,
-            0,0,2/(zFar - zNear),-(zFar+zNear)/2,
-            0,0,0,1;
+    float left = -1.0 * right;
+    orth << 2 / (right - left), 0, 0, -(right + left) / 2,
+        0, 2 / (top - bottom), 0, -(top + bottom) / 2,
+        0, 0, 2 / (zFar - zNear), -(zFar + zNear) / 2,
+        0, 0, 0, 1;
 
     // 投影变换
 
     Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
 
-    proj << zNear,0,0,0,
-            0,zNear,0,0,
-            0,0,zNear+zFar,-1.0*zFar*zNear,
-            0,0,1,0;
-
+    proj << zNear, 0, 0, 0,
+        0, zNear, 0, 0,
+        0, 0, zNear + zFar, -1.0 * zFar * zNear,
+        0, 0, 1, 0;
 
     projection = orth * proj;
 
     return projection;
 }
 
-int main(int argc, const char** argv)
+int main(int argc, const char **argv)
 {
     float angle = 0;
     bool command_line = false;
     std::string filename = "output.png";
 
-    if (argc >= 3) {
+    if (argc >= 3)
+    {
         command_line = true;
         angle = std::stof(argv[2]); // -r by default
-        if (argc == 4) {
+        if (argc == 4)
+        {
             filename = std::string(argv[3]);
         }
         else
@@ -107,7 +108,8 @@ int main(int argc, const char** argv)
     int key = 0;
     int frame_count = 0;
 
-    if (command_line) {
+    if (command_line)
+    {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
         r.set_model(get_model_matrix(angle));
@@ -123,7 +125,8 @@ int main(int argc, const char** argv)
         return 0;
     }
 
-    while (key != 27) {
+    while (key != 27)
+    {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
         r.set_model(get_model_matrix(angle));
@@ -139,10 +142,12 @@ int main(int argc, const char** argv)
 
         std::cout << "frame count: " << frame_count++ << '\n';
 
-        if (key == 'a') {
+        if (key == 'a')
+        {
             angle += 10;
         }
-        else if (key == 'd') {
+        else if (key == 'd')
+        {
             angle -= 10;
         }
     }
